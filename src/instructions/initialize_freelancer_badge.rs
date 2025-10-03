@@ -25,7 +25,7 @@ impl DataLen for InitializeFreelancerBadge {
 }
 
 pub fn init_freelancer_badge(accounts: &[AccountInfo], data: &[u8]) -> ProgramResult {
-    let [freelancer, badge, system_program] = accounts else {
+    let [freelancer, badge, _system_program, sysvar_rent_acc] = accounts else {
         return Err(ProgramError::NotEnoughAccountKeys);
     };
 
@@ -49,10 +49,9 @@ pub fn init_freelancer_badge(accounts: &[AccountInfo], data: &[u8]) -> ProgramRe
         return Err(BondrError::PdaMismatch.into());
     }
 
-    let min_lamports = system_program
-        .lamports()
-        .min(Rent::default().minimum_balance(FreelancerBadge::LEN));
-
+    let rent = Rent::from_account_info(sysvar_rent_acc)?;
+    let min_lamports = rent.minimum_balance(FreelancerBadge::LEN);
+    
     CreateAccount {
         from: freelancer,
         to: badge,

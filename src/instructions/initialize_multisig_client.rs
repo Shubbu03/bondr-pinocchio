@@ -31,7 +31,7 @@ impl DataLen for InitializeMultisigClient {
 }
 
 pub fn init_multisig_client(accounts: &[AccountInfo], data: &[u8]) -> ProgramResult {
-    let [client, multisig, _system_program] = accounts else {
+    let [client, multisig, _system_program, sysvar_rent_acc] = accounts else {
         return Err(ProgramError::NotEnoughAccountKeys);
     };
 
@@ -77,7 +77,8 @@ pub fn init_multisig_client(accounts: &[AccountInfo], data: &[u8]) -> ProgramRes
         }
     }
 
-    let min_lamports = Rent::default().minimum_balance(ClientMultisig::LEN).max(1); // ensure >0
+    let rent = Rent::from_account_info(sysvar_rent_acc)?;
+    let min_lamports = rent.minimum_balance(ClientMultisig::LEN).max(1); // ensure >0
 
     CreateAccount {
         from: client,
