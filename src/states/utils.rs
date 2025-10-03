@@ -1,6 +1,10 @@
-use pinocchio::program_error::ProgramError;
+use pinocchio::{
+    account_info::AccountInfo, instruction::Signer, program_error::ProgramError, pubkey::Pubkey,
+    seeds, ProgramResult,
+};
 
 use crate::errors::BondrError;
+use pinocchio_token::instructions::Transfer;
 
 pub trait DataLen {
     const LEN: usize;
@@ -36,4 +40,35 @@ pub unsafe fn to_bytes<T: DataLen>(data: &T) -> &[u8] {
 
 pub unsafe fn to_mut_bytes<T: DataLen>(data: &mut T) -> &mut [u8] {
     core::slice::from_raw_parts_mut(data as *mut T as *mut u8, T::LEN)
+}
+
+pub fn transfer_spl_tokens_from_escrow(
+    escrow_token_acc: &AccountInfo,
+    receiver_token_acc: &AccountInfo,
+    escrow_acc: &AccountInfo, // PDA authority account (escrow PDA)
+    client_pub: &Pubkey,
+    freelancer_pub: &Pubkey,
+    reference_seed: u8,
+    escrow_bump: u8,
+    amount: u64,
+) -> ProgramResult {
+    // Build the signer seeds exactly as your PDA derivation:
+    let pda_ref = &[reference_seed];
+    let bump_ref = &[escrow_bump];
+
+    let seeds_arr = seeds!(b"escrow", client_pub, freelancer_pub, pda_ref, bump_ref);
+
+    let signer = Signer::from(&seeds_arr);
+
+    // Construct the Transfer struct literal
+    let ix = Transfer {
+        from: escrow_token_acc,
+        to: receiver_token_acc,
+        authority: escrow_acc,
+        amount,
+    };
+
+    // Invoke signed with the PDA signer
+    ix.invoke_signed(&[signer])?;
+    Ok(())
 }
