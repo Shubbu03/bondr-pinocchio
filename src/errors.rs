@@ -26,6 +26,7 @@ pub enum BondrError {
     AlreadyApproved,
     MultisigPendingEscrowMismatch,
     MultisigThresholdNotMet,
+    UnauthorizedReceiver
 }
 
 impl From<BondrError> for ProgramError {
