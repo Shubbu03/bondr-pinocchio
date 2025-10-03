@@ -3,11 +3,10 @@ use pinocchio::{
 };
 
 use crate::{
-    errors::BondrError,
-    states::{
+    constants::MAX_MULTISIG_MEMBERS, errors::BondrError, states::{
         load_acc_mut_unchecked, load_ix_data, transfer_spl_tokens_from_escrow, ClientMultisig,
-        DataLen, Escrow, UserStats, MAX_MULTISIG_MEMBERS,
-    },
+        DataLen, Escrow, UserStats, 
+    }
 };
 
 #[repr(C)]

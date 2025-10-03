@@ -9,12 +9,11 @@ use pinocchio::{
 use pinocchio_system::instructions::CreateAccount;
 
 use crate::{
-    errors::BondrError,
-    states::{
+    constants::MAX_MULTISIG_MEMBERS, errors::BondrError, states::{
         load_acc_mut_unchecked,
         utils::{load_ix_data, DataLen},
-        ClientMultisig, MAX_MULTISIG_MEMBERS,
-    },
+        ClientMultisig, 
+    }
 };
 
 #[repr(C)]

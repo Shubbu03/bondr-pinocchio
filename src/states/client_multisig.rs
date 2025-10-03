@@ -1,8 +1,6 @@
 use pinocchio::pubkey::Pubkey;
 
-use crate::states::DataLen;
-
-pub const MAX_MULTISIG_MEMBERS: usize = 5;
+use crate::{constants::MAX_MULTISIG_MEMBERS, states::DataLen};
 
 #[repr(C)]
 #[derive(Clone, Copy, Debug, PartialEq)]
